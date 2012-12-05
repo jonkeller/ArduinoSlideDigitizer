@@ -1,0 +1,1 @@
+Instructions for building the circuit are included in a comment at the top of SlideProjector.ino.

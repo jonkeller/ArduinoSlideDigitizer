@@ -40,6 +40,10 @@
  * pin 6 to GND.  Connect pin 2 to the pin number of the Arduino that is indicated by
  * the TAKE_PHOTO_PIN constant below.
  *
+ * If you want to, connect an LED and 220-ohm resistor in series to the pin indicated by
+ * LED_PIN below.  It will start blinking when the carousel is nearly finished. It will
+ * also blink once at startup.
+ *
  * Optics:
  *
  * Remove the projection lens from the slide projector.  Shove the camera lens into the
@@ -70,17 +74,30 @@
 
 int ADVANCE_SLIDE_PIN = 46;
 int TAKE_PHOTO_PIN = 47;
+int LED_PIN = 38;
+int SLIDES_PER_CAROUSEL = 80; // Change this if a different sized tray is used.
+int slidesPhotographed = 0;
 
 void setup() {                
   pinMode(ADVANCE_SLIDE_PIN, OUTPUT);     
   pinMode(TAKE_PHOTO_PIN, OUTPUT);     
+  pinMode(LED_PIN, OUTPUT);     
+  digitalWrite(ADVANCE_SLIDE_PIN, HIGH);
+  digitalWrite(TAKE_PHOTO_PIN, LOW);
+  blinkLed();
 }
 
 void loop() {
-  advanceSlide();
-  delay(1000);
-  takePhoto();
-  delay(1000);
+  if (slidesPhotographed < SLIDES_PER_CAROUSEL) {
+    delay(1000);
+    takePhoto();
+    delay(1000);
+    advanceSlide();
+    slidesPhotographed++;
+  }
+  if (SLIDES_PER_CAROUSEL - slidesPhotographed < 5) {
+    blinkLed();
+  }
 }
 
 void advanceSlide() {
@@ -94,3 +111,11 @@ void takePhoto() {
   delay(250);
   digitalWrite(TAKE_PHOTO_PIN, LOW);
 }
+
+void blinkLed() {
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+}
+
